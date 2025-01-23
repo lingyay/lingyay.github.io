@@ -64,14 +64,9 @@
             const width = img.width;
             const height = img.height;
 
-            // 获取某个像素点的 RGB 值（例如左上角像素）
-            const pixelData = ctx.getImageData(0, 0, 1, 1).data;
-            const rgb = `R: ${pixelData[0]}, G: ${pixelData[1]}, B: ${pixelData[2]}`;
-
             // 显示详细信息
             details.innerHTML = `
               <li>分辨率: ${width} x ${height}</li>
-              <li>RGB 值（左上角像素）: ${rgb}</li>
               <li>文件类型: ${file.type}</li>
               <li>文件大小: ${(file.size / 1024).toFixed(2)} KB</li>
             `;
