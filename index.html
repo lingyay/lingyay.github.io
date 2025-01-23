@@ -5,61 +5,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZoeWonTecTool</title>
   <style>
+    /* 全局样式 */
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+      line-height: 1.6;
     }
-    #info {
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 20px 10px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #info, #controls {
       margin-top: 20px;
     }
+
+    label {
+      font-weight: bold;
+      margin-right: 10px;
+    }
+
+    input[type="file"], select, input[type="number"], button {
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+
+    a:hover {
+      background-color: #0056b3;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    ul li {
+      background: #f9f9f9;
+      margin: 5px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
     img {
       max-width: 100%;
       height: auto;
       margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
     }
-    canvas {
-      display: none;
-    }
-    #controls {
+
+    footer {
+      text-align: center;
       margin-top: 20px;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <h1>图片信息解析与格式转换</h1>
-  <input type="file" id="upload" accept="image/*">
-  <div id="info">
-    <h2>图片信息</h2>
-    <p id="fileInfo">请上传图片以查看信息。</p>
-    <ul id="details"></ul>
-  </div>
-  <canvas id="canvas"></canvas>
-  <img id="preview" alt="图片预览">
+  <header>
+    <h1>ZoeWonTecTool</h1>
+    <p>图片信息解析与格式转换工具</p>
+  </header>
 
-  <div id="controls">
-    <h2>图片格式转换</h2>
-    <label for="format">选择目标格式：</label>
-    <select id="format">
-      <option value="image/png">PNG</option>
-      <option value="image/jpeg">JPEG</option>
-      <option value="image/webp">WebP</option>
-    </select>
-    <br><br>
-    <label for="width">宽度：</label>
-    <input type="number" id="width" placeholder="输入宽度">
-    <label for="height">高度：</label>
-    <input type="number" id="height" placeholder="输入高度">
-    <br><br>
-    <label for="bitDepth">选择位深度：</label>
-    <select id="bitDepth">
-      <option value="16">16 位</option>
-      <option value="24" selected>24 位</option>
-      <option value="32">32 位</option>
-    </select>
-    <br><br>
-    <button id="convert">转换图片</button>
-    <a id="download" style="display: none;">下载转换后的图片</a>
-  </div>
+  <main>
+    <h2>上传图片</h2>
+    <input type="file" id="upload" accept="image/*">
+
+    <div id="info">
+      <h2>图片信息</h2>
+      <p id="fileInfo">请上传图片以查看信息。</p>
+      <ul id="details"></ul>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <img id="preview" alt="图片预览">
+
+    <div id="controls">
+      <h2>图片格式转换</h2>
+      <label for="format">选择目标格式：</label>
+      <select id="format">
+        <option value="image/png">PNG</option>
+        <option value="image/jpeg">JPEG</option>
+        <option value="image/webp">WebP</option>
+      </select>
+      <br>
+      <label for="width">宽度：</label>
+      <input type="number" id="width" placeholder="输入宽度">
+      <label for="height">高度：</label>
+      <input type="number" id="height" placeholder="输入高度">
+      <br>
+      <label for="bitDepth">选择位深度：</label>
+      <select id="bitDepth">
+        <option value="16">16 位</option>
+        <option value="24" selected>24 位</option>
+        <option value="32">32 位</option>
+      </select>
+      <br>
+      <button id="convert">转换图片</button>
+      <a id="download" style="display: none;">下载转换后的图片</a>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 ZoeWonTecTool. All Rights Reserved.</p>
+  </footer>
 
   <script>
     const upload = document.getElementById('upload');
@@ -122,60 +222,60 @@
       }
     });
 
-  convertButton.addEventListener('click', () => {
-    const selectedFormat = format.value;
-    const newWidth = parseInt(widthInput.value, 10);
-    const newHeight = parseInt(heightInput.value, 10);
-    const selectedBitDepth = parseInt(document.getElementById('bitDepth').value, 10);
+    convertButton.addEventListener('click', () => {
+      const selectedFormat = format.value;
+      const newWidth = parseInt(widthInput.value, 10);
+      const newHeight = parseInt(heightInput.value, 10);
+      const selectedBitDepth = parseInt(document.getElementById('bitDepth').value, 10);
 
-    if (isNaN(newWidth) || isNaN(newHeight) || newWidth <= 0 || newHeight <= 0) {
-      alert('请输入有效的宽度和高度！');
-      return;
-    }
-
-    // 调整 Canvas 尺寸并重新绘制图片
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, newWidth, newHeight);
-
-    // 如果选择了 16 位深度，手动降低颜色精度
-    if (selectedBitDepth === 16) {
-      const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
-      const data = imageData.data;
-
-      // 遍历每个像素，降低颜色精度
-      for (let i = 0; i < data.length; i += 4) {
-        data[i] = Math.floor(data[i] / 16) * 16;     // R
-        data[i + 1] = Math.floor(data[i + 1] / 16) * 16; // G
-        data[i + 2] = Math.floor(data[i + 2] / 16) * 16; // B
+      if (isNaN(newWidth) || isNaN(newHeight) || newWidth <= 0 || newHeight <= 0) {
+        alert('请输入有效的宽度和高度！');
+        return;
       }
 
-      ctx.putImageData(imageData, 0, 0);
-    }
+      // 调整 Canvas 尺寸并重新绘制图片
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, newWidth, newHeight);
 
-    // 如果选择了 24 位深度，移除 Alpha 通道
-    if (selectedBitDepth === 24) {
-      const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
-      const data = imageData.data;
-  
-      // 遍历每个像素，移除 Alpha 通道
-      for (let i = 0; i < data.length; i += 4) {
-        data[i + 3] = 255; // 将 Alpha 通道设置为完全不透明
+      // 如果选择了 16 位深度，手动降低颜色精度
+      if (selectedBitDepth === 16) {
+        const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
+        const data = imageData.data;
+
+        // 遍历每个像素，降低颜色精度
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = Math.floor(data[i] / 16) * 16;     // R
+          data[i + 1] = Math.floor(data[i + 1] / 16) * 16; // G
+          data[i + 2] = Math.floor(data[i + 2] / 16) * 16; // B
+        }
+
+        ctx.putImageData(imageData, 0, 0);
       }
-  
-      ctx.putImageData(imageData, 0, 0);
-    }
-  
-    // 导出图片为用户选择的格式
-    canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob);
-      downloadLink.href = url;
-      downloadLink.download = `converted.${selectedFormat.split('/')[1]}`;
-      downloadLink.style.display = 'block';
-      downloadLink.textContent = '点击下载转换后的图片';
-    }, selectedFormat);
-  });
+
+      // 如果选择了 24 位深度，移除 Alpha 通道
+      if (selectedBitDepth === 24) {
+        const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
+        const data = imageData.data;
+
+        // 遍历每个像素，移除 Alpha 通道
+        for (let i = 0; i < data.length; i += 4) {
+          data[i + 3] = 255; // 将 Alpha 通道设置为完全不透明
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+      }
+
+      // 导出图片为用户选择的格式
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        downloadLink.href = url;
+        downloadLink.download = `converted.${selectedFormat.split('/')[1]}`;
+        downloadLink.style.display = 'block';
+        downloadLink.textContent = '点击下载转换后的图片';
+      }, selectedFormat);
+    });
   </script>
 </body>
 </html>
