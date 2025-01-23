@@ -115,7 +115,7 @@
 <body>
   <header>
     <h1>ZoeWonTecTool</h1>
-    <p>11111</p>
+    <p>图片信息解析与格式转换工具</p>
   </header>
 
   <main>
@@ -187,32 +187,12 @@
           preview.src = e.target.result;
 
           // 加载图片到 Canvas 以解析更多信息
-img.src = e.target.result;
-img.onload = () => {
-  const ctx = canvas.getContext('2d');
-
-  // 限制图片显示的最大宽度和高度
-  const maxDisplayWidth = 500; // 最大显示宽度
-  const maxDisplayHeight = 500; // 最大显示高度
-  let displayWidth = img.width;
-  let displayHeight = img.height;
-
-  // 按比例缩放图片
-  if (img.width > maxDisplayWidth || img.height > maxDisplayHeight) {
-    const widthRatio = maxDisplayWidth / img.width;
-    const heightRatio = maxDisplayHeight / img.height;
-    const scaleRatio = Math.min(widthRatio, heightRatio); // 选择较小的缩放比例
-    displayWidth = Math.round(img.width * scaleRatio);
-    displayHeight = Math.round(img.height * scaleRatio);
-  }
-
-  // 设置 Canvas 的宽高为缩放后的尺寸
-  canvas.width = displayWidth;
-  canvas.height = displayHeight;
-
-  // 绘制缩放后的图片到 Canvas
-  ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
-};
+          img.src = e.target.result;
+          img.onload = () => {
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
 
             // 获取图片分辨率
             const width = img.width;
