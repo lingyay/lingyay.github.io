@@ -256,18 +256,35 @@ convertButton.addEventListener('click', () => {
         data[i + 1] = Math.floor(data[i + 1] / 16) * 16; // G
         data[i + 2] = Math.floor(data[i + 2] / 16) * 16; // B
       }
+      ctx.putImageData(imageData, 0, 0);
     } else if (selectedBitDepth === 24) {
-      // 移除 Alpha 通道以实现 24 位深度
+      // 创建一个新的 Canvas，只保留 RGB 通道
+      const newCanvas = document.createElement('canvas');
+      newCanvas.width = newWidth;
+      newCanvas.height = newHeight;
+      const newCtx = newCanvas.getContext('2d');
+
+      // 创建新的 ImageData，只包含 RGB 通道
+      const newImageData = newCtx.createImageData(newWidth, newHeight);
+      const newData = newImageData.data;
+
       for (let i = 0; i < data.length; i += 4) {
-        data[i + 3] = 255; // 将 Alpha 通道设置为完全不透明
+        newData[i] = data[i];       // R
+        newData[i + 1] = data[i + 1]; // G
+        newData[i + 2] = data[i + 2]; // B
+        newData[i + 3] = 255;       // Alpha 通道设置为完全不透明
       }
+
+      newCtx.putImageData(newImageData, 0, 0);
+
+      // 替换原始 Canvas
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      ctx.drawImage(newCanvas, 0, 0);
     } else if (selectedBitDepth === 32) {
       // 保留 Alpha 通道，无需额外处理
       console.log('保留 Alpha 通道，生成 32 位深度图片。');
     }
-
-    // 将修改后的数据写回 Canvas
-    ctx.putImageData(imageData, 0, 0);
   }
 
   // 导出图片为用户选择的格式
