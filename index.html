@@ -154,6 +154,19 @@
       ctx.putImageData(imageData, 0, 0);
     }
 
+    // 如果选择了 24 位深度，移除 Alpha 通道
+    if (selectedBitDepth === 24) {
+      const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
+      const data = imageData.data;
+  
+      // 遍历每个像素，移除 Alpha 通道
+      for (let i = 0; i < data.length; i += 4) {
+        data[i + 3] = 255; // 将 Alpha 通道设置为完全不透明
+      }
+  
+      ctx.putImageData(imageData, 0, 0);
+    }
+  
     // 导出图片为用户选择的格式
     canvas.toBlob((blob) => {
       const url = URL.createObjectURL(blob);
