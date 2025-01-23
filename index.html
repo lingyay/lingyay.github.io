@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片解析与格式转换</title>
+</head>
+<body>
+  <h1>图片解析与格式转换</h1>
+  <input type="file" id="upload" accept="image/*">
+  <select id="format">
+    <option value="image/png">PNG</option>
+    <option value="image/jpeg">JPEG</option>
+    <option value="image/webp">WebP</option>
+  </select>
+  <button id="convert">转换图片</button>
+  <canvas id="canvas" style="display: none;"></canvas>
+  <a id="download" style="display: none;">下载图片</a>
+
+  <script>
+    const upload = document.getElementById('upload');
+    const format = document.getElementById('format');
+    const convert = document.getElementById('convert');
+    const canvas = document.getElementById('canvas');
+    const download = document.getElementById('download');
+
+    let img = new Image();
+
+    upload.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    img.onload = () => {
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+    };
+
+    convert.addEventListener('click', () => {
+      const selectedFormat = format.value;
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        download.href = url;
+        download.download = `converted.${selectedFormat.split('/')[1]}`;
+        download.style.display = 'block';
+        download.textContent = '点击下载转换后的图片';
+      }, selectedFormat);
+    });
+  </script>
+</body>
+</html>
