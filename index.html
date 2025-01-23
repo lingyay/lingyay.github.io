@@ -222,60 +222,63 @@
       }
     });
 
-    convertButton.addEventListener('click', () => {
-      const selectedFormat = format.value;
-      const newWidth = parseInt(widthInput.value, 10);
-      const newHeight = parseInt(heightInput.value, 10);
-      const selectedBitDepth = parseInt(document.getElementById('bitDepth').value, 10);
+convertButton.addEventListener('click', () => {
+  const selectedFormat = format.value;
+  const newWidth = parseInt(widthInput.value, 10);
+  const newHeight = parseInt(heightInput.value, 10);
+  const selectedBitDepth = parseInt(document.getElementById('bitDepth').value, 10);
 
-      if (isNaN(newWidth) || isNaN(newHeight) || newWidth <= 0 || newHeight <= 0) {
-        alert('请输入有效的宽度和高度！');
-        return;
+  if (isNaN(newWidth) || isNaN(newHeight) || newWidth <= 0 || newHeight <= 0) {
+    alert('请输入有效的宽度和高度！');
+    return;
+  }
+
+  // 调整 Canvas 尺寸并重新绘制图片
+  canvas.width = newWidth;
+  canvas.height = newHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+  // 获取原始图片的位深度
+  const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
+  const data = imageData.data;
+  const originalBitDepth = data.length / (newWidth * newHeight) * 8; // 计算原始位深度
+
+  // 如果原始位深度与目标位深度一致，跳过转换
+  if (originalBitDepth === selectedBitDepth) {
+    console.log(`原始位深度 (${originalBitDepth} 位) 与目标位深度一致，无需转换。`);
+  } else {
+    // 根据目标位深度执行转换
+    if (selectedBitDepth === 16) {
+      // 降低颜色精度以模拟 16 位深度
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = Math.floor(data[i] / 16) * 16;     // R
+        data[i + 1] = Math.floor(data[i + 1] / 16) * 16; // G
+        data[i + 2] = Math.floor(data[i + 2] / 16) * 16; // B
       }
-
-      // 调整 Canvas 尺寸并重新绘制图片
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, newWidth, newHeight);
-
-      // 如果选择了 16 位深度，手动降低颜色精度
-      if (selectedBitDepth === 16) {
-        const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
-        const data = imageData.data;
-
-        // 遍历每个像素，降低颜色精度
-        for (let i = 0; i < data.length; i += 4) {
-          data[i] = Math.floor(data[i] / 16) * 16;     // R
-          data[i + 1] = Math.floor(data[i + 1] / 16) * 16; // G
-          data[i + 2] = Math.floor(data[i + 2] / 16) * 16; // B
-        }
-
-        ctx.putImageData(imageData, 0, 0);
+    } else if (selectedBitDepth === 24) {
+      // 移除 Alpha 通道以实现 24 位深度
+      for (let i = 0; i < data.length; i += 4) {
+        data[i + 3] = 255; // 将 Alpha 通道设置为完全不透明
       }
+    } else if (selectedBitDepth === 32) {
+      // 保留 Alpha 通道，无需额外处理
+      console.log('保留 Alpha 通道，生成 32 位深度图片。');
+    }
 
-      // 如果选择了 24 位深度，移除 Alpha 通道
-      if (selectedBitDepth === 24) {
-        const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
-        const data = imageData.data;
+    // 将修改后的数据写回 Canvas
+    ctx.putImageData(imageData, 0, 0);
+  }
 
-        // 遍历每个像素，移除 Alpha 通道
-        for (let i = 0; i < data.length; i += 4) {
-          data[i + 3] = 255; // 将 Alpha 通道设置为完全不透明
-        }
-
-        ctx.putImageData(imageData, 0, 0);
-      }
-
-      // 导出图片为用户选择的格式
-      canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        downloadLink.href = url;
-        downloadLink.download = `converted.${selectedFormat.split('/')[1]}`;
-        downloadLink.style.display = 'block';
-        downloadLink.textContent = '点击下载转换后的图片';
-      }, selectedFormat);
-    });
+  // 导出图片为用户选择的格式
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    downloadLink.href = url;
+    downloadLink.download = `converted.${selectedFormat.split('/')[1]}`;
+    downloadLink.style.display = 'block';
+    downloadLink.textContent = '点击下载转换后的图片';
+  }, selectedFormat);
+});
   </script>
 </body>
 </html>
