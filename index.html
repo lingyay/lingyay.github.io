@@ -50,6 +50,13 @@
     <label for="height">高度：</label>
     <input type="number" id="height" placeholder="输入高度">
     <br><br>
+    <label for="bitDepth">选择位深度：</label>
+    <select id="bitDepth">
+      <option value="16">16 位</option>
+      <option value="24" selected>24 位</option>
+      <option value="32">32 位</option>
+    </select>
+    <br><br>
     <button id="convert">转换图片</button>
     <a id="download" style="display: none;">下载转换后的图片</a>
   </div>
@@ -115,31 +122,47 @@
       }
     });
 
-    convertButton.addEventListener('click', () => {
-      const selectedFormat = format.value;
-      const newWidth = parseInt(widthInput.value, 10);
-      const newHeight = parseInt(heightInput.value, 10);
+  convertButton.addEventListener('click', () => {
+    const selectedFormat = format.value;
+    const newWidth = parseInt(widthInput.value, 10);
+    const newHeight = parseInt(heightInput.value, 10);
+    const selectedBitDepth = parseInt(document.getElementById('bitDepth').value, 10);
 
-      if (isNaN(newWidth) || isNaN(newHeight) || newWidth <= 0 || newHeight <= 0) {
-        alert('请输入有效的宽度和高度！');
-        return;
+    if (isNaN(newWidth) || isNaN(newHeight) || newWidth <= 0 || newHeight <= 0) {
+      alert('请输入有效的宽度和高度！');
+      return;
+    }
+
+    // 调整 Canvas 尺寸并重新绘制图片
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+    // 如果选择了 16 位深度，手动降低颜色精度
+    if (selectedBitDepth === 16) {
+      const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
+      const data = imageData.data;
+
+      // 遍历每个像素，降低颜色精度
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = Math.floor(data[i] / 16) * 16;     // R
+        data[i + 1] = Math.floor(data[i + 1] / 16) * 16; // G
+        data[i + 2] = Math.floor(data[i + 2] / 16) * 16; // B
       }
 
-      // 调整 Canvas 尺寸并重新绘制图片
-      canvas.width = newWidth;
-      canvas.height = newHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+      ctx.putImageData(imageData, 0, 0);
+    }
 
-      // 导出图片为用户选择的格式
-      canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        downloadLink.href = url;
-        downloadLink.download = `converted.${selectedFormat.split('/')[1]}`;
-        downloadLink.style.display = 'block';
-        downloadLink.textContent = '点击下载转换后的图片';
-      }, selectedFormat);
-    });
+    // 导出图片为用户选择的格式
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      downloadLink.href = url;
+      downloadLink.download = `converted.${selectedFormat.split('/')[1]}`;
+      downloadLink.style.display = 'block';
+      downloadLink.textContent = '点击下载转换后的图片';
+    }, selectedFormat);
+  });
   </script>
 </body>
 </html>
